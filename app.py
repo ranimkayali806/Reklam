@@ -14,7 +14,7 @@ class Employee(db.Model):
     birthdate = db.Column(db.DateTime,unique=False,nullable=False)
     city = db.Column(db.String(20),unique=False,nullable=True)
     shoesize = db.Column(db.Integer,unique=False,nullable=False)
-
+ 
    
 def CreateNew():
     b = Employee()
