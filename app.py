@@ -1,69 +1,68 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate, upgrade
 
-app = Flask("__name__")
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:Mercedes600@localhost/employee'
-db = SQLAlchemy(app)
-migrate = Migrate(app,db)
 
-class Employee(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    namn = db.Column(db.String(80),unique=False,nullable=False)
-    age = db.Column(db.Integer,unique=False,nullable=False)
-    birthdate = db.Column(db.DateTime,unique=False,nullable=False)
-    city = db.Column(db.String(20),unique=False,nullable=True)
-    shoesize = db.Column(db.Integer,unique=False,nullable=False)
- 
-   
-def CreateNew():
-    b = Employee()
-    b.namn = input("Ange namn: ")
-    b.age = input("Ange ålder: ")
-    b.birthdate = input("Ange födelseår: ")
-    b.city = input("Ange stad ")
-    b.shoesize = input("Ange skostorlek ")
-    db.session.add(b)
-    db.session.commit()
+import pygame
+from led import mlcdinit,mlcddraw
 
-def Search():
-    text = input("Ange text att söka på: ")
-    resultat = Employee.query.filter(Employee.namn.contains(text)).all()
-    for emp in resultat :
-        print(f"{emp.id}, {emp.namn}")
-    Id = int(input("Ange id på den som du vill uppdatera elle 0"))
+import random
+from datetime import datetime
 
-    if id == 0:
-        return
+today_time = datetime.now()
+current_minute = today_time.strftime("%M")
+current_minute_format = datetime.strptime(current_minute, "%M")
+current_hour = today_time.strftime("%H")
+current_hour_format = datetime.strptime(current_hour, "%H")
+
+start_hour = "17"
+stop_hour = "6"
+start_hour_format = datetime.strptime(start_hour, "%H")
+stop_hour_format = datetime.strptime(stop_hour, "%H")
+
+
+Hederlige_Harrys_Bilar = [["Köp bil", "hos", "Harry"],
+["En god", "bilaffär", "(för Harry!)"], ["Hederlige", "Harrys", "Bilar"]]
+
+
+Farmor_Ankas_Pajer_AB = [["Köp paj", "hos", "Farmor Anka"], ["Skynda innan Mårten", "ätit", "alla pajer"]]
+
+Svarte_Petters_Svartbyggen = [["Låt Petter", "bygga", "åt dig"], ["Bygga svart?", "Ring", "Petter"]]
+
+Långbens_detektivbyrå = [["Mysterier?", "Ring", "Långben"], ["Långben", "fixar", "biffen"]]
+
+reklam_text = ["Synas här?", "Python21:s", "Reklambyrå"]
+
+def ReklamTid():
     
-    employee = Employee.query.filter_by(id = Id).first()
-    print(f"{employee.id}, {employee.namn}, {employee.age}")
-    employee.namn = input("Ange nytt namn ")
-    employee.age = input("Ange ny ålder ")
-    db.session.commit()
+    reklam_tid = random.randint(1,14500)
+    if reklam_tid >= 1 and reklam_tid <= 5000:
+        reklam_text = random.choice(Hederlige_Harrys_Bilar)
+    elif reklam_tid >= 5001 and reklam_tid <= 8000:
+        reklam_text = random.choice(Farmor_Ankas_Pajer_AB)
+    elif reklam_tid >= 8001 and reklam_tid <= 9500:
+        if ((current_minute_format).minute % 2) == 0:
+            reklam_text = Svarte_Petters_Svartbyggen[0]
+        else:
+            reklam_text = Svarte_Petters_Svartbyggen[1]
+    elif reklam_tid >= 9501 and reklam_tid <= 13500: 
+        if current_hour_format >= start_hour_format and current_hour_format <= stop_hour_format:
+            reklam_text = Långbens_detektivbyrå[0]
+        else:
+            reklam_text = Långbens_detektivbyrå[1]
+    else:
+        reklam_text
+    
+    return reklam_text
 
 
-if __name__ == "__main__":
-    with app.app_context():
-        #db.create_all()
-        #db.session.commit()
-        upgrade()
+mlcdinit(16,3,3) # initialize a 16x3 display scaled 3x  
 
-        while True:
-            print("1  Sök")
-            print("2. Skapa ny")
-            print("7. Avsluta")
-            action = input("Ange val: ")
+#draw the three lines passed as a list
+mlcddraw(["Hello",         
+               "     world",
+               "What"])
 
-            if action == "1":
-                Search()
+pygame.time.set_timer(pygame.USEREVENT, 5000)
 
-            if action == "2":
-                CreateNew()
-
-            if action == "7":
-                break
-
-
-
-
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.USEREVENT:
+            mlcddraw(ReklamTid())
