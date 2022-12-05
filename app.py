@@ -1,10 +1,48 @@
-
-
 import pygame
 from led import mlcdinit,mlcddraw
 
+from flask import Flask, render_template, request, url_for, redirect
+from flask_sqlalchemy import SQLAlchemy
+
+
 import random
 from datetime import datetime
+
+from pygame.locals import (
+
+    K_UP,
+
+    K_DOWN,
+
+    K_LEFT,
+
+    K_RIGHT,
+
+    K_ESCAPE,
+
+    KEYDOWN,
+
+    QUIT,
+
+)
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:Mercedes600@localhost:3306/reklam'
+db = SQLAlchemy(app)
+
+class Annons(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    kundid = db.Column(db.Integer, nullable=False)
+    del1 = db.Column(db.String(30), unique=False, nullable=False)
+    del2 = db.Column(db.String(30), unique=False, nullable=False)
+    del3 = db.Column(db.String(30), unique=False, nullable=False)
+
+class Kund(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    namn = db.Column(db.String(50),unique=False,nullable=False)
+    betalt = db.Column(db.Integer,unique=False,nullable=False)
+
+
 
 today_time = datetime.now()
 current_minute = today_time.strftime("%M")
@@ -17,52 +55,78 @@ stop_hour = "6"
 start_hour_format = datetime.strptime(start_hour, "%H")
 stop_hour_format = datetime.strptime(stop_hour, "%H")
 
+Hederlige_Harrys_Bilar = []
+Farmor_Ankas_Pajer_AB = []
+Svarte_Petters_Svartbyggen = []
+Långbens_detektivbyrå = []
 
-Hederlige_Harrys_Bilar = [["Köp bil", "hos", "Harry"],
-["En god", "bilaffär", "(för Harry!)"], ["Hederlige", "Harrys", "Bilar"]]
+if __name__  == "__main__":
+    with app.app_context():
 
+        annons= Annons.query.filter_by(kundid = 1).all()
+        for a in annons:
+            Hederlige_Harrys_Bilar.append([a.del1, a.del2, a.del3])
 
-Farmor_Ankas_Pajer_AB = [["Köp paj", "hos", "Farmor Anka"], ["Skynda innan Mårten", "ätit", "alla pajer"]]
+        annons= Annons.query.filter_by(kundid = 2).all()
+        for a in annons:
+            Farmor_Ankas_Pajer_AB.append([a.del1, a.del2, a.del3])
 
-Svarte_Petters_Svartbyggen = [["Låt Petter", "bygga", "åt dig"], ["Bygga svart?", "Ring", "Petter"]]
+        annons= Annons.query.filter_by(kundid = 3).all()
+        for a in annons:
+            Svarte_Petters_Svartbyggen.append([a.del1, a.del2, a.del3])
 
-Långbens_detektivbyrå = [["Mysterier?", "Ring", "Långben"], ["Långben", "fixar", "biffen"]]
+        annons= Annons.query.filter_by(kundid = 4).all()
+        for a in annons:
+            Långbens_detektivbyrå.append([a.del1, a.del2, a.del3])
 
-egen_reklam_text = ["Synas här?", "Python21:s", "Reklambyrå"]
+    # Farmor_Ankas_Pajer_AB = [["Köp paj", "hos", "Farmor Anka"], ["Skynda innan Mårten", "ätit", "alla pajer"]]
 
-def ReklamTid():
-    
-    reklam_tid = random.randint(1,14500)
-    if reklam_tid >= 1 and reklam_tid <= 5000:
-        reklam_text = random.choice(Hederlige_Harrys_Bilar)
-    elif reklam_tid >= 5001 and reklam_tid <= 8000:
-        reklam_text = random.choice(Farmor_Ankas_Pajer_AB)
-    elif reklam_tid >= 8001 and reklam_tid <= 9500:
-        if ((current_minute_format).minute % 2) == 0:
-            reklam_text = Svarte_Petters_Svartbyggen[0]
+    # Svarte_Petters_Svartbyggen = [["Låt Petter", "bygga", "åt dig"], ["Bygga svart?", "Ring", "Petter"]]
+
+    # Långbens_detektivbyrå = [["Mysterier?", "Ring", "Långben"], ["Långben", "fixar", "biffen"]]
+
+    egen_reklam_text = ["Synas här?", "Python22:s", "Reklambyrå"]
+
+    def ReklamTid():
+        
+        reklam_tid = random.randint(1,14500)
+        if reklam_tid >= 1 and reklam_tid <= 5000:
+            reklam_text = random.choice(Hederlige_Harrys_Bilar)
+        elif reklam_tid >= 5001 and reklam_tid <= 8000:
+            reklam_text = random.choice(Farmor_Ankas_Pajer_AB)
+        elif reklam_tid >= 8001 and reklam_tid <= 9500:
+            if ((current_minute_format).minute % 2) == 0:
+                reklam_text = Svarte_Petters_Svartbyggen[0]
+            else:
+                reklam_text = Svarte_Petters_Svartbyggen[1]
+        elif reklam_tid >= 9501 and reklam_tid <= 13500: 
+            if current_hour_format >= start_hour_format and current_hour_format <= stop_hour_format:
+                reklam_text = Långbens_detektivbyrå[0]
+            else:
+                reklam_text = Långbens_detektivbyrå[1]
         else:
-            reklam_text = Svarte_Petters_Svartbyggen[1]
-    elif reklam_tid >= 9501 and reklam_tid <= 13500: 
-        if current_hour_format >= start_hour_format and current_hour_format <= stop_hour_format:
-            reklam_text = Långbens_detektivbyrå[0]
-        else:
-            reklam_text = Långbens_detektivbyrå[1]
-    else:
-        reklam_text = egen_reklam_text
-    
-    return reklam_text
+            reklam_text = egen_reklam_text
+        
+        return reklam_text
 
+    # if __name__  == "__main__":
+    #     with app.app_context():
 
-mlcdinit(16,3,3) # initialize a 16x3 display scaled 3x  
+    #         db.create_all()
+    #         db.session.commit()
 
-#draw the three lines passed as a list
-mlcddraw(["Hello",         
-               "     world",
-               "What"])
+    mlcdinit(16,3,3) # initialize a 16x3 display scaled 3x  
 
-pygame.time.set_timer(pygame.USEREVENT, 5000)
+    #draw the three lines passed as a list
+    mlcddraw(["Synas här?",         
+                "Python22:s",
+                "Reklambyrå"])
 
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.USEREVENT:
-            mlcddraw(ReklamTid())
+    pygame.time.set_timer(pygame.USEREVENT, 5000)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.USEREVENT:
+                mlcddraw(ReklamTid())
+            elif event.type == KEYDOWN:
+                running = False

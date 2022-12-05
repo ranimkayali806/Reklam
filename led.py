@@ -8,7 +8,7 @@ def mlcdinit(chars,lines,scalein):
     pygame.init()
     size = [12*chars*scale,20*lines*scale]
     screen= pygame.display.set_mode(size)
-    pygame.display.set_caption("Pyhton21klassens LCD")
+    pygame.display.set_caption("Pyhton22klassens LCD")
     myfont = pygame.font.SysFont("monospace", 20*scale)
 
 
