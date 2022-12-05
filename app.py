@@ -15,7 +15,7 @@ class Employee(db.Model):
     city = db.Column(db.String(20),unique=False,nullable=True)
     shoesize = db.Column(db.Integer,unique=False,nullable=False)
 
-
+   
 def CreateNew():
     b = Employee()
     b.namn = input("Ange namn: ")
