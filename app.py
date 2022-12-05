@@ -28,7 +28,7 @@ Svarte_Petters_Svartbyggen = [["Låt Petter", "bygga", "åt dig"], ["Bygga svart
 
 Långbens_detektivbyrå = [["Mysterier?", "Ring", "Långben"], ["Långben", "fixar", "biffen"]]
 
-reklam_text = ["Synas här?", "Python21:s", "Reklambyrå"]
+egen_reklam_text = ["Synas här?", "Python21:s", "Reklambyrå"]
 
 def ReklamTid():
     
@@ -48,7 +48,7 @@ def ReklamTid():
         else:
             reklam_text = Långbens_detektivbyrå[1]
     else:
-        reklam_text
+        reklam_text = egen_reklam_text
     
     return reklam_text
 
