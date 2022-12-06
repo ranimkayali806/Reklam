@@ -27,7 +27,7 @@ from pygame.locals import (
 )
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:Mercedes600@localhost:3306/reklam'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:password@localhost:3306/reklam'
 db = SQLAlchemy(app)
 
 class Annons(db.Model):
@@ -59,6 +59,7 @@ Hederlige_Harrys_Bilar = []
 Farmor_Ankas_Pajer_AB = []
 Svarte_Petters_Svartbyggen = []
 Långbens_detektivbyrå = []
+Yrrol_AB =[]
 
 if __name__  == "__main__":
     with app.app_context():
@@ -79,6 +80,23 @@ if __name__  == "__main__":
         for a in annons:
             Långbens_detektivbyrå.append([a.del1, a.del2, a.del3])
 
+        annons= Annons.query.filter_by(kundid = 5).all()
+        for a in annons:
+            Yrrol_AB.append([a.del1, a.del2, a.del3])
+
+        totalsumma = 0
+        kundsumma =[]
+        slot = []
+        kund = Kund.query.all()
+
+        for k in kund :
+            totalsumma += k.betalt
+            kundsumma.append(k.betalt)
+            slot.append(totalsumma)
+
+        totalsumma += 1000
+
+
     # Farmor_Ankas_Pajer_AB = [["Köp paj", "hos", "Farmor Anka"], ["Skynda innan Mårten", "ätit", "alla pajer"]]
 
     # Svarte_Petters_Svartbyggen = [["Låt Petter", "bygga", "åt dig"], ["Bygga svart?", "Ring", "Petter"]]
@@ -86,24 +104,27 @@ if __name__  == "__main__":
     # Långbens_detektivbyrå = [["Mysterier?", "Ring", "Långben"], ["Långben", "fixar", "biffen"]]
 
     egen_reklam_text = ["Synas här?", "Python22:s", "Reklambyrå"]
+    larm_text = ["BRANDLARM", "UTRYM", "SNARAST"]
 
     def ReklamTid():
         
-        reklam_tid = random.randint(1,14500)
-        if reklam_tid >= 1 and reklam_tid <= 5000:
+        reklam_tid = random.randint(1,totalsumma)
+        if reklam_tid >= 1 and reklam_tid <= slot[0]:
             reklam_text = random.choice(Hederlige_Harrys_Bilar)
-        elif reklam_tid >= 5001 and reklam_tid <= 8000:
+        elif reklam_tid >= (slot[0] + 1) and reklam_tid <= slot[1]:
             reklam_text = random.choice(Farmor_Ankas_Pajer_AB)
-        elif reklam_tid >= 8001 and reklam_tid <= 9500:
+        elif reklam_tid >= (slot[1] + 1) and reklam_tid <= slot[2]:
             if ((current_minute_format).minute % 2) == 0:
                 reklam_text = Svarte_Petters_Svartbyggen[0]
             else:
                 reklam_text = Svarte_Petters_Svartbyggen[1]
-        elif reklam_tid >= 9501 and reklam_tid <= 13500: 
+        elif reklam_tid >= (slot[2] + 1) and reklam_tid <= slot[3]: 
             if current_hour_format >= start_hour_format and current_hour_format <= stop_hour_format:
                 reklam_text = Långbens_detektivbyrå[0]
             else:
                 reklam_text = Långbens_detektivbyrå[1]
+        elif reklam_tid >= (slot[3] + 1) and reklam_tid <= slot[4]:
+            reklam_text = random.choice(Yrrol_AB)
         else:
             reklam_text = egen_reklam_text
         
@@ -122,11 +143,21 @@ if __name__  == "__main__":
                 "Python22:s",
                 "Reklambyrå"])
 
-    pygame.time.set_timer(pygame.USEREVENT, 5000)
+    running = True
+    larm = False
 
-    while True:
+    pygame.time.set_timer(pygame.USEREVENT, 5000)
+    while running:
         for event in pygame.event.get():
             if event.type == pygame.USEREVENT:
-                mlcddraw(ReklamTid())
+                if larm == False:
+                    mlcddraw(ReklamTid())
+                else :
+                    mlcddraw(larm_text)
             elif event.type == KEYDOWN:
+                if larm == False:
+                    larm = True
+                else :
+                    larm = False
+            elif event.type == QUIT:
                 running = False
