@@ -27,7 +27,7 @@ from pygame.locals import (
 )
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:password@localhost:3306/reklam'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:Mercedes600@localhost:3306/reklam'
 db = SQLAlchemy(app)
 
 class Annons(db.Model):
